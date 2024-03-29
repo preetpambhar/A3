@@ -35,7 +35,7 @@ namespace A3.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("A3.Models.Comments", b =>
@@ -65,7 +65,7 @@ namespace A3.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("A3.Models.Item", b =>
@@ -84,7 +84,7 @@ namespace A3.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Items");
+                    b.ToTable("Items", (string)null);
                 });
 
             modelBuilder.Entity("A3.Models.Order", b =>
@@ -111,7 +111,7 @@ namespace A3.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("A3.Models.Product", b =>
@@ -138,7 +138,7 @@ namespace A3.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Product");
+                    b.ToTable("Product", (string)null);
                 });
 
             modelBuilder.Entity("A3.Models.User", b =>
@@ -169,7 +169,7 @@ namespace A3.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("User", (string)null);
                 });
 #pragma warning restore 612, 618
         }

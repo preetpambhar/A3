@@ -19,113 +19,124 @@ namespace A3.Controllers
             _context = context;
         }
 
-        // GET: User
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.User.ToListAsync());
-        }
-
-        // GET: User/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return View(user);
-        }
-
         // GET: User/Create
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: User/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,email,password,username,purchase_history,shipping_address")] User user)
+        public IActionResult Create([FromBody] User user)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
+                return BadRequest(ModelState); // Return validation errors
+            }
+
+            _context.User.Add(user);
+            _context.SaveChanges();
+
+            // Check if the request expects JSON response
+            if (Request.Headers["Accept"].ToString().Contains("application/json"))
+            {
+                // Return JSON response with user details
+                return Json(new { message = "User created successfully", user });
+            }
+            else
+            {
+                // Redirect to the Index action method for HTML response
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
         }
 
-        // GET: User/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: User/Index
+        public IActionResult Index()
+        {
+            var users = _context.User.ToList(); // Change from _context.Users to _context.User
+            return Json(users);
+        }
+
+        // GET: User/Details/5
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User.FindAsync(id);
+            var user = _context.User.FirstOrDefault(m => m.Id == id);
             if (user == null)
             {
                 return NotFound();
             }
+
+            return View(user);
+        }
+
+        // GET: User/Edit/5
+        public IActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = _context.User.FirstOrDefault(m => m.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             return View(user);
         }
 
         // POST: User/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,email,password,username,purchase_history,shipping_address")] User user)
+        // [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, [Bind("Id,email,password,username,purchase_history,shipping_address")] User user)
         {
             if (id != user.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserExists(user.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return View(user); // Return the view with validation errors
             }
-            return View(user);
+
+            try
+            {
+                _context.Update(user);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(user.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToAction(nameof(Index)); // Redirect to the index action after successful update
         }
 
         // GET: User/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = _context.User.FirstOrDefault(m => m.Id == id);
             if (user == null)
             {
                 return NotFound();
@@ -137,16 +148,18 @@ namespace A3.Controllers
         // POST: User/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            var user = await _context.User.FindAsync(id);
-            if (user != null)
+            var user = _context.User.FirstOrDefault(m => m.Id == id);
+            if (user == null)
             {
-                _context.User.Remove(user);
+                return NotFound();
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            _context.User.Remove(user);
+            _context.SaveChanges();
+
+            return RedirectToAction(nameof(Index)); // Redirect to the index action after successful deletion
         }
 
         private bool UserExists(int id)
