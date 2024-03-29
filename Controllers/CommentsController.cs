@@ -20,9 +20,10 @@ namespace A3.Controllers
         }
 
         // GET: Comments
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Comments.ToListAsync());
+            var Comment = _context.Comments.ToList(); // Change from _context.Products to _context.Product
+            return Json(Comment);
         }
 
         // GET: Comments/Details/5

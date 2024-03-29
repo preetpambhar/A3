@@ -20,11 +20,11 @@ namespace A3.Controllers
         }
 
         // GET: Order
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Orders.ToListAsync());
+            var Order = _context.Orders.ToList(); // Change from _context.Products to _context.Product
+            return Json(Order);
         }
-
         // GET: Order/Details/5
         public async Task<IActionResult> Details(int? id)
         {
